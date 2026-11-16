@@ -6,12 +6,38 @@
   <title>Meeting — QuickJoin</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📹</text></svg>">
   <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    .share-code{font:600 1rem ui-monospace,monospace;letter-spacing:1px}
+    [hidden]{display:none!important}
+  </style>
 </head>
 <body>
   <div class="wrap">
     <a class="back" href="/">← Back to QuickJoin</a>
     <h1 class="page-title">📹 Meeting</h1>
     <p class="sub">Start a call or jump into a saved one.</p>
+
+    <div class="card">
+      <h2>Join with a code</h2>
+      <p style="margin-top:0">Meeting codes work like task codes — share one and everyone lands in the same video room.</p>
+      <form class="row" id="code-form">
+        <input type="text" id="join-code" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="40">
+        <button type="submit">Join meeting</button>
+      </form>
+      <div class="row" style="margin-top:10px">
+        <button type="button" class="secondary" id="create-code">Create meeting code</button>
+      </div>
+      <div id="code-out" hidden style="margin-top:14px">
+        <label for="my-code">Your meeting code</label>
+        <input type="text" id="my-code" class="share-code" readonly style="width:100%">
+        <div class="row" style="margin-top:10px">
+          <button type="button" class="secondary" id="copy-code">Copy code</button>
+          <button type="button" class="secondary" id="copy-invite">Copy invite link</button>
+          <button type="button" id="start-with-code">Start this meeting</button>
+        </div>
+      </div>
+      <p class="hint" id="code-msg" role="status" style="min-height:20px"></p>
+    </div>
 
     <div class="card">
       <h2>Start or join a video meeting</h2>
@@ -79,6 +105,66 @@
       render();
     });
     render();
+
+    // ---- meeting codes (no account needed; the code is the room) ----
+    var ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    function makeCode() {
+      var bytes = new Uint8Array(20);
+      crypto.getRandomValues(bytes);
+      var raw = '';
+      for (var i = 0; i < 20; i++) raw += ALPHABET[bytes[i] % 32];
+      return raw.match(/.{4}/g).join('-');
+    }
+    function normalizeCode(input) { return input.toUpperCase().replace(/[\s-]/g, ''); }
+    function joinCodeRoom(code) {
+      window.open('https://meet.jit.si/' + encodeURIComponent('quickjoin-' + code.toLowerCase()), '_blank');
+    }
+    function inviteUrl(code) {
+      var url = new URL(location.pathname, location.origin);
+      url.hash = new URLSearchParams({ room: code }).toString();
+      return url.href;
+    }
+    function codeMsg(msg) { document.getElementById('code-msg').textContent = msg; }
+    document.getElementById('create-code').addEventListener('click', function () {
+      var code = makeCode();
+      document.getElementById('my-code').value = code;
+      document.getElementById('code-out').hidden = false;
+      codeMsg('Share this code or the invite link — anyone with it joins the same room.');
+    });
+    document.getElementById('copy-code').addEventListener('click', async function () {
+      try { await navigator.clipboard.writeText(document.getElementById('my-code').value); codeMsg('Code copied.'); }
+      catch (e) {
+        var el = document.getElementById('my-code');
+        el.focus(); el.select(); codeMsg('Select and copy the highlighted code.');
+      }
+    });
+    document.getElementById('copy-invite').addEventListener('click', async function () {
+      var link = inviteUrl(document.getElementById('my-code').value);
+      try { await navigator.clipboard.writeText(link); codeMsg('Invite link copied. It fills in the code automatically.'); }
+      catch (e) { codeMsg('Copy this link: ' + link); }
+    });
+    document.getElementById('start-with-code').addEventListener('click', function () {
+      joinCodeRoom(normalizeCode(document.getElementById('my-code').value));
+    });
+    document.getElementById('code-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var code = normalizeCode(document.getElementById('join-code').value.trim());
+      if (!/^[A-HJ-NP-Z2-9]{20}$/.test(code)) {
+        codeMsg('That code doesn\'t look complete — it should be 20 characters, like XXXX-XXXX-XXXX-XXXX-XXXX.');
+        return;
+      }
+      joinCodeRoom(code);
+    });
+    // An invite link (#room=CODE) fills in the code automatically.
+    (function () {
+      var incoming = new URLSearchParams(location.hash.slice(1)).get('room');
+      if (!incoming) return;
+      var normalized = normalizeCode(incoming);
+      if (/^[A-HJ-NP-Z2-9]{20}$/.test(normalized)) {
+        document.getElementById('join-code').value = normalized.match(/.{4}/g).join('-');
+        codeMsg('Your invite code is filled in — hit Join meeting.');
+      }
+    })();
   </script>
 </body>
 </html>
