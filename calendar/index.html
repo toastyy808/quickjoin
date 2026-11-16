@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar — QuickJoin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">← Back to QuickJoin</a>
+    <h1 class="page-title">📅 Calendar</h1>
+    <p class="sub">Tap a day to add a note.</p>
+
+    <div class="card">
+      <div class="cal-head">
+        <button class="secondary" id="prev" type="button">← Prev</button>
+        <h2 id="month-label"></h2>
+        <button class="secondary" id="next" type="button">Next →</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div style="margin-top:16px">
+        <h2 id="day-label" style="font-size:1.05rem">Today</h2>
+        <ul class="plain" id="note-list"></ul>
+        <p class="empty" id="note-empty">No notes for this day.</p>
+        <form class="row" id="note-form" style="margin-top:10px">
+          <input type="text" id="note-input" placeholder="Add a note…" autocomplete="off">
+          <button type="submit">Add</button>
+        </form>
+      </div>
+      <p class="hint">Notes save in this browser.</p>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <a class="btn" href="https://calendar.google.com" target="_blank" rel="noopener">Open Google Calendar ↗</a>
+      <p class="hint" style="margin-bottom:0">For the full family calendar.</p>
+    </div>
+  </div>
+  <script>
+    var KEY = 'qj-cal';
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+    function save(notes) { localStorage.setItem(KEY, JSON.stringify(notes)); }
+    function keyOf(y, m, d) { return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0'); }
+
+    var today = new Date();
+    var viewY = today.getFullYear(), viewM = today.getMonth();
+    var selY = today.getFullYear(), selM = today.getMonth(), selD = today.getDate();
+    var grid = document.getElementById('cal-grid');
+    var label = document.getElementById('month-label');
+    var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function renderCal() {
+      var notes = load();
+      label.textContent = MONTHS[viewM] + ' ' + viewY;
+      grid.innerHTML = '';
+      ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function (d) {
+        var s = document.createElement('div');
+        s.className = 'dow'; s.textContent = d; grid.appendChild(s);
+      });
+      var first = new Date(viewY, viewM, 1).getDay();
+      var days = new Date(viewY, viewM + 1, 0).getDate();
+      for (var i = 0; i < first; i++) {
+        var b = document.createElement('button');
+        b.className = 'blank'; b.type = 'button'; b.disabled = true; grid.appendChild(b);
+      }
+      for (var d = 1; d <= days; d++) {
+        (function (d) {
+          var btn = document.createElement('button');
+          btn.type = 'button'; btn.textContent = d;
+          var k = keyOf(viewY, viewM, d);
+          if (notes[k] && notes[k].length) btn.classList.add('has-note');
+          if (viewY === today.getFullYear() && viewM === today.getMonth() && d === today.getDate()) btn.classList.add('today');
+          if (viewY === selY && viewM === selM && d === selD) btn.classList.add('selected');
+          btn.addEventListener('click', function () { selY = viewY; selM = viewM; selD = d; renderCal(); renderDay(); });
+          grid.appendChild(btn);
+        })(d);
+      }
+    }
+    function renderDay() {
+      var notes = load();
+      var k = keyOf(selY, selM, selD);
+      var list = notes[k] || [];
+      document.getElementById('day-label').textContent = MONTHS[selM] + ' ' + selD + ', ' + selY;
+      var ul = document.getElementById('note-list');
+      ul.innerHTML = '';
+      document.getElementById('note-empty').style.display = list.length ? 'none' : 'block';
+      list.forEach(function (n, i) {
+        var li = document.createElement('li');
+        var span = document.createElement('span'); span.textContent = n;
+        var x = document.createElement('button');
+        x.className = 'x'; x.textContent = '✕'; x.setAttribute('aria-label', 'Delete note');
+        x.addEventListener('click', function () {
+          var ns = load(); ns[k].splice(i, 1);
+          if (!ns[k].length) delete ns[k];
+          save(ns); renderCal(); renderDay();
+        });
+        li.appendChild(span); li.appendChild(x); ul.appendChild(li);
+      });
+    }
+    document.getElementById('prev').addEventListener('click', function () {
+      viewM--; if (viewM < 0) { viewM = 11; viewY--; } renderCal();
+    });
+    document.getElementById('next').addEventListener('click', function () {
+      viewM++; if (viewM > 11) { viewM = 0; viewY++; } renderCal();
+    });
+    document.getElementById('note-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var input = document.getElementById('note-input');
+      var text = input.value.trim();
+      if (!text) return;
+      var ns = load(); var k = keyOf(selY, selM, selD);
+      (ns[k] = ns[k] || []).push(text);
+      save(ns); input.value = ''; renderCal(); renderDay();
+    });
+    renderCal(); renderDay();
+  </script>
+</body>
+</html>

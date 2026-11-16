@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games — QuickJoin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">← Back to QuickJoin</a>
+    <h1 class="page-title">🎮 Games</h1>
+    <p class="sub">Quick games, no setup.</p>
+
+    <div class="card">
+      <h2>Tic-Tac-Toe</h2>
+      <p class="status" id="ttt-status">X goes first</p>
+      <div class="ttt" id="ttt-board"></div>
+      <button class="secondary" id="ttt-reset" type="button">New game</button>
+    </div>
+
+    <div class="card">
+      <h2>Memory Match</h2>
+      <p class="status" id="mem-status">Find all 6 pairs</p>
+      <div class="memory" id="mem-board"></div>
+      <button class="secondary" id="mem-reset" type="button">Shuffle &amp; restart</button>
+    </div>
+
+    <div class="card">
+      <h2>Guess the Number</h2>
+      <p class="status" id="guess-status">I'm thinking of a number from 1 to 100.</p>
+      <form class="row" id="guess-form">
+        <input type="number" id="guess-input" min="1" max="100" placeholder="Your guess">
+        <button type="submit">Guess</button>
+      </form>
+      <div class="row" style="margin-top:10px">
+        <button class="secondary" id="guess-reset" type="button">New number</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // --- Tic-Tac-Toe ---
+    var tttBoard = document.getElementById('ttt-board');
+    var tttStatus = document.getElementById('ttt-status');
+    var cells, turn, over;
+    function tttNew() {
+      cells = Array(9).fill(''); turn = 'X'; over = false;
+      tttStatus.textContent = 'X goes first';
+      tttBoard.innerHTML = '';
+      for (var i = 0; i < 9; i++) {
+        (function (i) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.addEventListener('click', function () {
+            if (over || cells[i]) return;
+            cells[i] = turn; b.textContent = turn;
+            var wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            var won = wins.some(function (w) { return cells[w[0]] === turn && cells[w[1]] === turn && cells[w[2]] === turn; });
+            if (won) { tttStatus.textContent = turn + ' wins!'; over = true; return; }
+            if (cells.every(Boolean)) { tttStatus.textContent = "It's a draw."; over = true; return; }
+            turn = turn === 'X' ? 'O' : 'X';
+            tttStatus.textContent = turn + "'s turn";
+          });
+          tttBoard.appendChild(b);
+        })(i);
+      }
+    }
+    document.getElementById('ttt-reset').addEventListener('click', tttNew);
+    tttNew();
+
+    // --- Memory Match ---
+    var memBoard = document.getElementById('mem-board');
+    var memStatus = document.getElementById('mem-status');
+    var first = null, lock = false, found = 0, moves = 0;
+    function memNew() {
+      var emojis = ['🍎','🚀','🐶','⚽','🌻','🎸'];
+      var deck = emojis.concat(emojis).sort(function () { return Math.random() - 0.5; });
+      first = null; lock = false; found = 0; moves = 0;
+      memStatus.textContent = 'Find all 6 pairs';
+      memBoard.innerHTML = '';
+      deck.forEach(function (e) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.textContent = '❓'; b.dataset.emoji = e;
+        b.addEventListener('click', function () {
+          if (lock || b.classList.contains('matched') || b === first) return;
+          b.textContent = e;
+          if (!first) { first = b; return; }
+          moves++;
+          if (first.dataset.emoji === e) {
+            first.classList.add('matched'); b.classList.add('matched');
+            found++;
+            memStatus.textContent = found === 6 ? 'You got them all in ' + moves + ' tries!' : found + ' of 6 pairs';
+            first = null;
+          } else {
+            lock = true;
+            var a = first, c = b;
+            setTimeout(function () { a.textContent = '❓'; c.textContent = '❓'; first = null; lock = false; }, 700);
+          }
+        });
+        memBoard.appendChild(b);
+      });
+    }
+    document.getElementById('mem-reset').addEventListener('click', memNew);
+    memNew();
+
+    // --- Guess the Number ---
+    var target, tries;
+    var guessStatus = document.getElementById('guess-status');
+    var guessInput = document.getElementById('guess-input');
+    function guessNew() {
+      target = Math.floor(Math.random() * 100) + 1; tries = 0;
+      guessStatus.textContent = "I'm thinking of a number from 1 to 100.";
+      guessInput.value = '';
+    }
+    document.getElementById('guess-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var g = parseInt(guessInput.value, 10);
+      if (!g || g < 1 || g > 100) { guessStatus.textContent = 'Pick a number from 1 to 100.'; return; }
+      tries++;
+      if (g === target) guessStatus.textContent = 'Got it in ' + tries + (tries === 1 ? ' try!' : ' tries!') + ' Hit "New number" to play again.';
+      else if (g < target) guessStatus.textContent = 'Higher! (try ' + tries + ')';
+      else guessStatus.textContent = 'Lower! (try ' + tries + ')';
+      guessInput.value = ''; guessInput.focus();
+    });
+    document.getElementById('guess-reset').addEventListener('click', guessNew);
+    guessNew();
+  </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting — QuickJoin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📹</text></svg>">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">← Back to QuickJoin</a>
+    <h1 class="page-title">📹 Meeting</h1>
+    <p class="sub">Start a call or jump into a saved one.</p>
+
+    <div class="card">
+      <h2>Start or join a video meeting</h2>
+      <p style="margin-top:0">Pick a room name — anyone with the link can join. Free, no account needed.</p>
+      <form class="row" id="room-form">
+        <input type="text" id="room-input" placeholder="Room name, e.g. family-chat" autocomplete="off">
+        <button type="submit">Start / Join</button>
+      </form>
+      <p class="hint">Opens in a new tab, powered by Jitsi Meet.</p>
+    </div>
+
+    <div class="card">
+      <h2>Saved meeting links</h2>
+      <form class="row" id="link-form">
+        <input type="text" id="link-name" placeholder="Name, e.g. Sunday call" autocomplete="off">
+        <input type="url" id="link-url" placeholder="https://…" autocomplete="off">
+        <button type="submit">Save link</button>
+      </form>
+      <ul class="plain" id="link-list"></ul>
+      <p class="empty" id="link-empty">No saved links yet.</p>
+      <p class="hint">Links save in this browser.</p>
+    </div>
+  </div>
+  <script>
+    document.getElementById('room-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = document.getElementById('room-input').value.trim()
+        .toLowerCase().replace(/[^a-z0-9-_]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+      if (!name) return;
+      window.open('https://meet.jit.si/' + encodeURIComponent('quickjoin-' + name), '_blank');
+    });
+
+    var KEY = 'qj-meetings';
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } }
+    function save(links) { localStorage.setItem(KEY, JSON.stringify(links)); }
+    var list = document.getElementById('link-list');
+    var emptyMsg = document.getElementById('link-empty');
+    function render() {
+      var links = load();
+      list.innerHTML = '';
+      emptyMsg.style.display = links.length ? 'none' : 'block';
+      links.forEach(function (l, i) {
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = l.url; a.target = '_blank'; a.rel = 'noopener';
+        a.textContent = l.name; a.style.flex = '1';
+        var x = document.createElement('button');
+        x.className = 'x'; x.textContent = '✕'; x.setAttribute('aria-label', 'Delete link');
+        x.addEventListener('click', function () {
+          var ls = load(); ls.splice(i, 1); save(ls); render();
+        });
+        li.appendChild(a); li.appendChild(x);
+        list.appendChild(li);
+      });
+    }
+    document.getElementById('link-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = document.getElementById('link-name').value.trim();
+      var url = document.getElementById('link-url').value.trim();
+      if (!name || !url) return;
+      if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+      var links = load(); links.push({ name: name, url: url }); save(links);
+      document.getElementById('link-name').value = '';
+      document.getElementById('link-url').value = '';
+      render();
+    });
+    render();
+  </script>
+</body>
+</html>
