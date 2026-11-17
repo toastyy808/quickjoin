@@ -39,8 +39,6 @@ header.top .brand{font-family:"Libre Baskerville",Georgia,serif;font-size:1.55re
 header.top .brand span{color:var(--green)}
 header.top nav{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
 header.top nav button{border-radius:999px}
-header.top nav a.qj-back{font:inherit;font-weight:700;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:.45rem .9rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;min-height:2.25rem;box-sizing:border-box}
-header.top nav a.qj-back:hover{border-color:var(--green)}
 .gamebar{display:none;align-items:center;gap:10px;padding:10px 0}
 .gamebar.show{display:flex}
 .gamebar .spacer{flex:1}
@@ -93,6 +91,34 @@ table.recipes td,table.recipes th{padding:8px 6px;border-bottom:1px solid var(--
 .matchrow .left{font-weight:800;min-width:110px}
 .matchrow select{flex:1;min-width:160px}
 footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:var(--ink2);font-size:.88rem;text-align:center}
+/* ---- 16:9 fit: game views lay out in columns and size their boards to the
+   viewport height, so on a 16:9 screen nothing needs scrolling. ---- */
+.td-layout,.mb-layout{display:flex;flex-direction:column;gap:12px}
+.td-side{display:flex;flex-direction:column;gap:12px}
+.mb-controls{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.mb-controls .acts{display:flex;flex-direction:column;gap:8px}
+@media(min-width:1000px){
+  .wrap{max-width:1560px;padding-bottom:14px}
+  header.top{padding:10px 0 8px;margin-bottom:12px}
+  .hero{padding:20px 20px 16px}
+  .hero h1{font-size:1.7rem}
+  #homeGrid{grid-template-columns:repeat(3,1fr)}
+  .chap{padding:14px}
+  footer{margin-top:16px;padding-top:10px}
+  .td-layout{flex-direction:row;align-items:flex-start}
+  .td-main{flex:1 1 auto;min-width:0}
+  .td-main .hud{margin-top:0}
+  .td-side{flex:0 0 372px}
+  .td-side .card{padding:14px}
+  .td-side .opt{padding:.5rem .8rem;margin:6px 0}
+  .td-side .shop{grid-template-columns:1fr 1fr;margin:0}
+  #tdCanvas{width:min(100%,max(320px,calc((100vh - 330px)*1.5)));width:min(100%,max(320px,calc((100dvh - 330px)*1.5)));margin:0 auto}
+  .mb-layout{flex-direction:row;align-items:flex-start}
+  .mb-main{flex:0 1 auto}
+  .mb-main .hud{margin-top:0}
+  .mb-side{flex:1 1 320px;min-width:290px}
+  #mbCanvas{width:auto;height:max(300px,min(calc(100vh - 330px),640px));height:max(300px,min(calc(100dvh - 330px),640px));max-width:100%}
+}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
@@ -103,7 +129,6 @@ footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:v
   <header class="top" id="mainHeader">
     <div class="brand">The <span>Booklet</span></div>
     <nav>
-      <a class="qj-back" href="/games">← QuickJoin</a>
       <button data-nav="home">Home</button>
       <button data-nav="pools">Pool Maker</button>
       <button data-nav="ch1">Ch. 1 Quiz</button>
@@ -138,12 +163,12 @@ footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:v
       <p class="small" id="poolSummary"></p>
     </div>
     <div style="height:16px"></div>
-    <div class="grid cols2">
+    <div class="grid cols2" id="homeGrid">
       <button class="card chap" data-nav="ch1"><span class="num">Chapter 1</span><h3>Quiz Quest</h3><p>Multiple-choice questions from your pool. Answer them all and see your score.</p><span class="go">Play →</span></button>
       <button class="card chap" data-nav="ch2"><span class="num">Chapter 2</span><h3>True or False Trail</h3><p>Follow the trail of statements — each one is true or false. How many can you call right?</p><span class="go">Play →</span></button>
       <button class="card chap" data-nav="ch3"><span class="num">Chapter 3</span><h3>Match-Up</h3><p>Match each word to its partner. Clear every set in your pool to finish the chapter.</p><span class="go">Play →</span></button>
       <button class="card chap" data-nav="ch4"><span class="num">Chapter 4</span><h3>Tower Defense — Quiz Gate</h3><p>Soldier enemies march on the castle. Six tower types — Arrow, Cannon, Frost, Sniper, Tesla, and a Barracks that sends out defenders — with upgrades, bosses every 10 waves, and flying enemies. Answer 3 Quiz Gate questions to unlock each wave.</p><span class="go">Play →</span></button>
-      <button class="card chap" data-nav="ch5"><span class="num">Chapter 5</span><h3>Mine &amp; Build Trivia</h3><p>Explore a 2D world as Steve. Answer one question to mine three blocks at once, craft at the table, and build with any block anywhere you like — fill the marked plot with 12 blocks to finish the house.</p><span class="go">Play →</span></button>
+      <button class="card chap" data-nav="ch5"><span class="num">Chapter 5</span><h3>Mine &amp; Build Trivia</h3><p>Start on the grass and dig straight down — dirt, then stone, then coal, iron, gold, and diamond the deeper you go. Answer one question to mine three blocks at once, craft at the table, and fill the marked surface plot with 12 blocks to finish the house.</p><span class="go">Play →</span></button>
       <button class="card chap" data-nav="pools"><span class="num">Appendix</span><h3>Pool Maker</h3><p>Write your own question pools — multiple choice, true/false, and matching — and play every chapter with them.</p><span class="go">Open →</span></button>
     </div>
   </section>
@@ -151,7 +176,7 @@ footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:v
   <!-- ============ POOL MAKER ============ -->
   <section class="view" id="view-pools">
     <h2>Pool Maker</h2>
-    <p class="small">Pools you make here live in this tab and work in Chapters 1–3 and at the Chapter 4 Quiz Gate and Chapter 5 digging questions. The three starter pools are always here.</p>
+    <p class="small">Pools you make here live in this tab and work in Chapters 1–3 and at the Chapter 4 Quiz Gate and Chapter 5 digging questions. The starter pools are always here.</p>
     <div class="grid cols2">
       <div class="card">
         <h3 style="margin-top:0">New pool</h3>
@@ -232,36 +257,41 @@ footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:v
 
   <!-- ============ CH 4 : TOWER DEFENSE ============ -->
   <section class="view" id="view-ch4">
-    <div class="hud">
-      <span class="stat">🪙 Gold <span id="tdGold">180</span></span>
-      <span class="stat">❤️ Lives <span id="tdLives">20</span></span>
-      <span class="stat">🌊 Wave <span id="tdWave">0</span></span>
-      <span class="stat">👾 On field <span id="tdField">0</span></span>
-      <span class="stat">🏰 Towers <span id="tdTowers">0</span></span>
-      <span class="stat" id="tdKills">Wave 0 · 0 stopped</span>
-    </div>
-    <p class="msg" id="tdMsg">Pick a tower below, tap a grass square to build it, answer the 3 gate questions, then press Start Wave.</p>
-    <canvas class="game" id="tdCanvas" width="720" height="480" aria-label="Tower defense board. Tap a grass square to build the selected tower."></canvas>
-
-    <div class="card" style="margin-top:12px">
-      <div class="row"><h3 style="margin:0">🚪 Quiz Gate — Wave <span id="tdGateWave">1</span></h3><span class="small grow" id="tdGatePool"></span></div>
-      <div id="tdGateBody"></div>
-    </div>
-
-    <div class="shop" id="tdShop"></div>
-    <div class="row">
-      <button class="primary" id="tdStart">▶ Start wave</button>
-      <button id="tdPause">Pause</button>
-      <button id="tdSpeed">Speed: 1×</button>
-      <button id="tdRestart">Restart</button>
-      <button class="gold" id="tdPlayAgain" style="display:none">Play again</button>
-    </div>
-    <div class="card" id="tdTowerCard" style="display:none;margin-top:12px">
-      <div class="row">
-        <strong id="tdTowerName"></strong><span id="tdTowerStats" class="small grow"></span>
-        <button class="primary" id="tdUpgrade">Upgrade</button>
-        <button id="tdSell">Sell</button>
-        <button id="tdCloseCard">Done</button>
+    <div class="td-layout">
+      <div class="td-main">
+        <div class="hud">
+          <span class="stat">🪙 Gold <span id="tdGold">180</span></span>
+          <span class="stat">❤️ Lives <span id="tdLives">20</span></span>
+          <span class="stat">🌊 Wave <span id="tdWave">0</span></span>
+          <span class="stat">👾 On field <span id="tdField">0</span></span>
+          <span class="stat">🏰 Towers <span id="tdTowers">0</span></span>
+          <span class="stat" id="tdKills">Wave 0 · 0 stopped</span>
+        </div>
+        <p class="msg" id="tdMsg">Pick a tower, tap a grass square to build it, answer the 3 gate questions, then press Start Wave.</p>
+        <canvas class="game" id="tdCanvas" width="720" height="480" aria-label="Tower defense board. Tap a grass square to build the selected tower."></canvas>
+        <div class="row" style="margin-top:10px">
+          <button class="primary" id="tdStart">▶ Start wave</button>
+          <button id="tdPause">Pause</button>
+          <button id="tdSpeed">Speed: 1×</button>
+          <button id="tdRestart">Restart</button>
+          <button class="gold" id="tdPlayAgain" style="display:none">Play again</button>
+        </div>
+      </div>
+      <div class="td-side">
+        <div class="card">
+          <div class="row"><h3 style="margin:0">🚪 Quiz Gate — Wave <span id="tdGateWave">1</span></h3><span class="small grow" id="tdGatePool"></span></div>
+          <div id="tdGateBody"></div>
+        </div>
+        <div class="card" id="tdTowerCard" style="display:none">
+          <div class="row">
+            <strong id="tdTowerName"></strong><span id="tdTowerStats" class="small grow"></span>
+            <button class="primary" id="tdUpgrade">Upgrade</button>
+            <button id="tdSell">Sell</button>
+            <button id="tdCloseCard">Done</button>
+          </div>
+        </div>
+        <h3 style="margin:0">Build a tower</h3>
+        <div class="shop" id="tdShop"></div>
       </div>
     </div>
     <div class="card" style="margin-top:12px">
@@ -273,29 +303,38 @@ footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:v
 
   <!-- ============ CH 5 : MINE & BUILD ============ -->
   <section class="view" id="view-ch5">
-    <div class="hud">
-      <span class="stat">⭐ XP <span id="mbXp">0</span></span>
-      <span class="stat">⛏️ <span id="mbPick">Wooden Pickaxe</span></span>
-      <span class="stat">🏠 House on plot: <span id="mbHouse">0</span>/12</span>
-      <span class="stat" id="mbPos"></span>
-    </div>
-    <canvas class="game" id="mbCanvas" width="800" height="480" tabindex="0" aria-label="Mine and Build world. Use arrow keys or WASD to move Steve."></canvas>
-    <p class="msg" id="mbMsg">Move with the arrow keys, WASD, or the pad. Face a tree, rock, or ore and press Dig — one correct answer mines three blocks.</p>
-    <div class="row">
-      <button class="primary" id="mbDig">⛏️ Dig (Space)</button>
-      <button id="mbBuild">🧱 Build (B)</button>
-      <button id="mbPickup">✋ Pick up block</button>
-      <button id="mbExplore">🗺️ Explore new area</button>
-    </div>
-    <div class="dpad" aria-label="Move pad">
-      <span></span><button data-dir="up" aria-label="Move up">▲</button><span></span>
-      <button data-dir="left" aria-label="Move left">◀</button><button data-dir="down" aria-label="Move down">▼</button><button data-dir="right" aria-label="Move right">▶</button>
-    </div>
-    <h3>🎒 Backpack — tap a block to select it for building</h3>
-    <div class="inv" id="mbInv"></div>
-    <div class="card">
-      <h3 style="margin-top:0">🔨 Crafting Table</h3>
-      <table class="recipes"><thead><tr><th>Recipe</th><th>You need</th><th></th></tr></thead><tbody id="mbRecipes"></tbody></table>
+    <div class="mb-layout">
+      <div class="mb-main">
+        <div class="hud">
+          <span class="stat">⭐ XP <span id="mbXp">0</span></span>
+          <span class="stat">⛏️ <span id="mbPick">Wooden Pickaxe</span></span>
+          <span class="stat">⬇️ Depth <span id="mbDepth">0</span></span>
+          <span class="stat">🏠 House on plot: <span id="mbHouse">0</span>/12</span>
+          <span class="stat" id="mbPos"></span>
+        </div>
+        <canvas class="game" id="mbCanvas" width="560" height="640" tabindex="0" aria-label="Mine and Build world. Use arrow keys or WASD to move Steve, and dig down through the layers."></canvas>
+        <p class="msg" id="mbMsg">Steve starts on the grass. Move with the arrow keys, WASD, or the pad — face down and press Dig to start your mine shaft. One correct answer mines three blocks, and the deeper you go, the rarer the ore.</p>
+        <div class="mb-controls">
+          <div class="acts">
+            <button class="primary" id="mbDig">⛏️ Dig (Space)</button>
+            <button id="mbBuild">🧱 Build (B)</button>
+            <button id="mbPickup">✋ Pick up block</button>
+            <button id="mbExplore">🗺️ Explore new area</button>
+          </div>
+          <div class="dpad" style="margin-top:0" aria-label="Move pad">
+            <span></span><button data-dir="up" aria-label="Move up">▲</button><span></span>
+            <button data-dir="left" aria-label="Move left">◀</button><button data-dir="down" aria-label="Move down">▼</button><button data-dir="right" aria-label="Move right">▶</button>
+          </div>
+        </div>
+      </div>
+      <div class="mb-side">
+        <h3 style="margin-top:0">🎒 Backpack — tap a block to select it for building</h3>
+        <div class="inv" id="mbInv"></div>
+        <div class="card">
+          <h3 style="margin-top:0">🔨 Crafting Table</h3>
+          <table class="recipes"><thead><tr><th>Recipe</th><th>You need</th><th></th></tr></thead><tbody id="mbRecipes"></tbody></table>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -353,7 +392,11 @@ var pools=[
   MT([["Red","Apple"],["Yellow","Banana"],["Orange","Carrot"],["Green","Lime"]]),
   MC("Which ocean borders California?","Pacific","Atlantic","Indian","Southern"),
   TF("Mount Everest is the tallest mountain on Earth.",true),
-  MC("What money is used in Japan?","Yen","Dollar","Euro","Pound")]}
+  MC("What money is used in Japan?","Yen","Dollar","Euro","Pound")]},
+ {id:"starter-music",name:"Music Trivia",questions:[
+  MC("How many beats in a quarter note?","1","2","3","4"),
+  MC("How many beats in a half note?","2","1","3","4"),
+  MC("How many beats in a whole note?","4","1","2","3")]}
 ];
 var activePoolId="starter-animals";
 function poolById(id){for(var i=0;i<pools.length;i++)if(pools[i].id===id)return pools[i];return pools[0]}
@@ -843,8 +886,8 @@ document.getElementById("tdStart").addEventListener("click",function(){
 });
 document.getElementById("tdPause").addEventListener("click",function(){if(!td||td.gameOver)return;tdPaused=!tdPaused;this.textContent=tdPaused?"Resume":"Pause"});
 document.getElementById("tdSpeed").addEventListener("click",function(){tdSpeedVal=tdSpeedVal===1?2:1;this.textContent="Speed: "+tdSpeedVal+"×"});
-document.getElementById("tdRestart").addEventListener("click",function(){tdNewGame();tdMsg("Fresh field. Pick a tower below, tap a grass square to build it, answer the 3 gate questions, then press Start Wave.")});
-document.getElementById("tdPlayAgain").addEventListener("click",function(){tdNewGame();tdMsg("Fresh field. Pick a tower below, tap a grass square to build it, answer the 3 gate questions, then press Start Wave.")});
+document.getElementById("tdRestart").addEventListener("click",function(){tdNewGame();tdMsg("Fresh field. Pick a tower, tap a grass square to build it, answer the 3 gate questions, then press Start Wave.")});
+document.getElementById("tdPlayAgain").addEventListener("click",function(){tdNewGame();tdMsg("Fresh field. Pick a tower, tap a grass square to build it, answer the 3 gate questions, then press Start Wave.")});
 function tdSpawnEnemy(kind){
   var w=Math.max(1,td.wave),baseHp=32*(1+(w-1)*0.38);
   var hp=baseHp,speedVal=52,reward=11,lifeCost=1;
@@ -1298,12 +1341,17 @@ function tdDraw(){
 }
 
 /* ================= CH 5 : MINE & BUILD TRIVIA ================= */
-var MB_C=20,MB_R=12,MB_T=40;
-var MB_SOLID={tree:1,rock:1,coal:1,iron:1,gold:1,diamond:1,pond:1};
-var MB_MINE={tree:"wood",rock:"stone",coal:"coal",iron:"iron",gold:"gold",diamond:"diamond"};
-var MB_EMOJI={tree:"🌲",rock:"🪨",coal:"⚫",iron:"⛓️",gold:"🟡",diamond:"💎",pond:"🟦"};
-var MB_NAMES={wood:"Wood",stone:"Stone",coal:"Coal",iron:"Iron Ore",gold:"Gold Ore",diamond:"Diamond Ore",plank:"Planks",fence:"Fence",torch:"Torch",stonebrick:"Stone Brick",ironblock:"Iron Block",goldblock:"Gold Block",diamondblock:"Diamond Block"};
-var MB_BLOCK_EMOJI={wood:"🪵",stone:"🪨",coal:"⚫",iron:"⛓️",gold:"🟡",diamond:"💎",plank:"🟫",fence:"🚧",torch:"🔦",stonebrick:"🧱",ironblock:"⬜",goldblock:"🟨",diamondblock:"🟦"};
+/* Terraria-style vertical mine: grass surface on top, then dirt, stone,
+   and deeper layers where coal, iron, gold, and diamond get more common.
+   The camera follows Steve as he digs down. One correct trivia answer
+   still mines the faced block plus the two nearest mineable blocks. */
+var MB_C=14,MB_R=36,MB_T=40,MB_VIEW=16,MB_SURF=3;
+var MB_SOLID={grass:1,dirt:1,stone:1,coal:1,iron:1,gold:1,diamond:1,bedrock:1,tree:1};
+var MB_MINE={tree:"wood",grass:"dirt",dirt:"dirt",stone:"stone",coal:"coal",iron:"iron",gold:"gold",diamond:"diamond"};
+var MB_FILL={grass:"#7a4a21",dirt:"#8a5a2b",stone:"#8d8d94",coal:"#83838c",iron:"#97897d",gold:"#8d8d94",diamond:"#7e8894",bedrock:"#3a3a40"};
+var MB_OREMARK={coal:"⚫",iron:"⛓️",gold:"🟡",diamond:"💎"};
+var MB_NAMES={wood:"Wood",dirt:"Dirt",stone:"Stone",coal:"Coal",iron:"Iron Ore",gold:"Gold Ore",diamond:"Diamond Ore",plank:"Planks",fence:"Fence",torch:"Torch",stonebrick:"Stone Brick",ironblock:"Iron Block",goldblock:"Gold Block",diamondblock:"Diamond Block"};
+var MB_BLOCK_EMOJI={wood:"🪵",dirt:"🟤",stone:"🪨",coal:"⚫",iron:"⛓️",gold:"🟡",diamond:"💎",plank:"🟫",fence:"🚧",torch:"🔦",stonebrick:"🧱",ironblock:"⬜",goldblock:"🟨",diamondblock:"🟦"};
 var RECIPES=[
  {out:"plank",n:1,need:{wood:1},label:"Planks"},
  {out:"fence",n:1,need:{wood:2},label:"Fence"},
@@ -1312,23 +1360,32 @@ var RECIPES=[
  {out:"ironblock",n:1,need:{iron:4},label:"Iron Block"},
  {out:"goldblock",n:1,need:{gold:4},label:"Gold Block"},
  {out:"diamondblock",n:1,need:{diamond:4},label:"Diamond Block"}];
-var PLOT={c0:14,r0:1,c1:18,r1:5}; /* house plot, top-right */
+var PLOT={c0:9,c1:12,r0:0,r1:2}; /* house plot on the surface: 4 x 3 = 12 tiles */
 var mb=null;
+function mbGenCell(r){
+  var d=r-MB_SURF,roll=Math.random();
+  if(r===MB_SURF)return "grass";
+  if(r>=MB_R-1)return "bedrock";
+  if(d<=5)return roll<0.86?"dirt":roll<0.94?"stone":"coal";
+  if(d<=12)return roll<0.42?"dirt":roll<0.86?"stone":roll<0.93?"coal":"iron";
+  if(d<=19){if(roll<0.05)return "dirt";if(roll<0.80)return "stone";if(roll<0.86)return "coal";if(roll<0.94)return "iron";return "gold"}
+  if(d<=26){if(roll<0.04)return "dirt";if(roll<0.72)return "stone";if(roll<0.77)return "coal";if(roll<0.87)return "iron";if(roll<0.95)return "gold";return "diamond"}
+  if(roll<0.03)return "dirt";if(roll<0.66)return "stone";if(roll<0.70)return "coal";if(roll<0.79)return "iron";if(roll<0.89)return "gold";return "diamond";
+}
 function mbNewWorld(keepPlaced){
   var old=keepPlaced&&mb?mb.grid:null;
-  var grid=[];
-  for(var r=0;r<MB_R;r++){grid.push([]);for(var c=0;c<MB_C;c++){
-    var t="grass",roll=Math.random();
-    if(roll<0.16)t="tree";else if(roll<0.24)t="rock";else if(roll<0.29)t="coal";else if(roll<0.325)t="iron";else if(roll<0.345)t="gold";else if(roll<0.355)t="diamond";
-    grid[r].push(t);
-  }}
-  /* pond blob */
-  var pc=2+Math.floor(Math.random()*4),pr=8+Math.floor(Math.random()*3);
-  [[0,0],[1,0],[0,1],[1,1],[2,0]].forEach(function(o){var cc=pc+o[0],rr=pr+o[1];if(cc<MB_C&&rr<MB_R)grid[rr][cc]="pond"});
-  if(old){for(var r2=0;r2<MB_R;r2++)for(var c2=0;c2<MB_C;c2++){if(old[r2][c2].indexOf("placed:")===0)grid[r2][c2]=old[r2][c2]}}
-  if(!mb){mb={x:9,y:6,dir:"down",xp:0,inv:{},sel:null}}
+  var grid=[],r,c;
+  for(r=0;r<MB_R;r++){grid.push([]);for(c=0;c<MB_C;c++)grid[r].push(r>=MB_SURF?mbGenCell(r):"air")}
+  /* trees stand on the grass — never on the house plot or Steve's start */
+  for(c=0;c<MB_C;c++){
+    if(c>=PLOT.c0&&c<=PLOT.c1)continue;
+    if(c===2)continue;
+    if(Math.random()<0.22)grid[MB_SURF-1][c]="tree";
+  }
+  if(old)for(var r2=0;r2<MB_R&&r2<old.length;r2++)for(var c2=0;c2<MB_C&&c2<old[r2].length;c2++){if(old[r2][c2].indexOf("placed:")===0)grid[r2][c2]=old[r2][c2]}
+  if(!mb)mb={x:2,y:MB_SURF-1,dir:"down",xp:0,inv:{},sel:null};
   mb.grid=grid;
-  if(MB_SOLID[mb.grid[mb.y][mb.x]])mb.grid[mb.y][mb.x]="grass";
+  if(MB_SOLID[mb.grid[mb.y][mb.x]])mb.grid[mb.y][mb.x]="air";
   mbRender();
 }
 function mbPickName(){var xp=mb.xp;return xp>=150?"Diamond Pickaxe":xp>=90?"Gold Pickaxe":xp>=50?"Iron Pickaxe":xp>=20?"Stone Pickaxe":"Wooden Pickaxe"}
@@ -1337,6 +1394,7 @@ function mbMsg(m){document.getElementById("mbMsg").textContent=m}
 function mbSync(){
   document.getElementById("mbXp").textContent=mb.xp;
   document.getElementById("mbPick").textContent=mbPickName();
+  document.getElementById("mbDepth").textContent=Math.max(0,mb.y-MB_SURF);
   var h=mbHouseCount();document.getElementById("mbHouse").textContent=h;
   document.getElementById("mbPos").textContent="Facing "+mb.dir;
   var inv=document.getElementById("mbInv");inv.innerHTML="";
@@ -1350,7 +1408,7 @@ function mbSync(){
     b.addEventListener("click",function(){mb.sel=k;mbMsg(MB_NAMES[k]+" selected for building. Face an empty tile and press Build.");mbSync();refocus()});
     inv.appendChild(b);
   });
-  if(!any)inv.innerHTML="<span class='small'>Empty — dig trees, rocks, and ores to fill it.</span>";
+  if(!any)inv.innerHTML="<span class='small'>Empty — dig trees and dig down through the layers to fill it.</span>";
   var tb=document.getElementById("mbRecipes");tb.innerHTML="";
   RECIPES.forEach(function(rec){
     var tr=document.createElement("tr");
@@ -1378,7 +1436,7 @@ function mbMove(dir){
   var f=mbFaced();
   if(f.c<0||f.r<0||f.c>=MB_C||f.r>=MB_R){mbMsg("That's the edge of the world.");mbRender();return}
   var t=mb.grid[f.r][f.c];
-  if(MB_SOLID[t]||t.indexOf("placed:")===0){mbMsg(t==="pond"?"You can't walk into the pond.":t.indexOf("placed:")===0?"A block you placed is in the way — pick it up to move it.":"A "+t+" is in the way. Face it and Dig to mine it.");mbRender();return}
+  if(MB_SOLID[t]||t.indexOf("placed:")===0){mbMsg(t.indexOf("placed:")===0?"A block you placed is in the way — pick it up to move it.":"Solid "+t+" — face it and press Dig to mine through.");mbRender();return}
   mb.x=f.c;mb.y=f.r;mbRender();
 }
 function mbDig(){
@@ -1386,9 +1444,9 @@ function mbDig(){
   var f=mbFaced();
   if(f.c<0||f.r<0||f.c>=MB_C||f.r>=MB_R){mbMsg("There's nothing to dig at the edge of the world.");return}
   var t=mb.grid[f.r][f.c];
-  if(t==="pond"){mbMsg("You can't mine the pond — water always wins.");return}
+  if(t==="bedrock"){mbMsg("Bedrock! Nothing can break it — that's the floor of the world.");return}
   if(t.indexOf("placed:")===0){mbMsg("That's a block you placed. Use Pick Up to take it back.");return}
-  if(!MB_MINE[t]){mbMsg("Nothing to dig there — face a tree, rock, or ore.");return}
+  if(!MB_MINE[t]){mbMsg("Nothing to dig there — face a tree, or a block of dirt, stone, or ore.");return}
   askQuestion("⛏️ Digging question",function(ok){
     if(!ok){mbMsg("Wrong answer — the "+t+" stays put. Try again!");mbRender();return}
     /* mine faced block + two nearest mineable blocks */
@@ -1398,7 +1456,7 @@ function mbDig(){
     all.sort(function(a,b){return a.d-b.d});
     for(var i=0;i<all.length&&targets.length<3;i++)targets.push(all[i]);
     var got={};
-    targets.forEach(function(tg){var res=MB_MINE[mb.grid[tg.r][tg.c]];mb.grid[tg.r][tg.c]="grass";mb.inv[res]=(mb.inv[res]||0)+1;mb.xp+=10;got[res]=(got[res]||0)+1});
+    targets.forEach(function(tg){var res=MB_MINE[mb.grid[tg.r][tg.c]];mb.grid[tg.r][tg.c]="air";mb.inv[res]=(mb.inv[res]||0)+1;mb.xp+=10;got[res]=(got[res]||0)+1});
     var parts=Object.keys(got).map(function(k){return got[k]+" "+MB_NAMES[k]});
     mbMsg("Correct! Mined "+targets.length+" blocks: "+parts.join(", ")+". +"+(targets.length*10)+" XP — "+mbPickName()+".");
     mbSync();mbRender();
@@ -1410,13 +1468,12 @@ function mbBuild(){
   var f=mbFaced();
   if(f.c<0||f.r<0||f.c>=MB_C||f.r>=MB_R){mbMsg("You can't build off the edge of the world.");return}
   var t=mb.grid[f.r][f.c];
-  if(t==="pond"){mbMsg("You can't build on the pond — your block would sink.");return}
   if(t.indexOf("placed:")===0){mbMsg("There's already a placed block there. Pick it up first, or face an empty tile.");return}
-  if(MB_SOLID[t]){mbMsg("A "+t+" is growing there. Dig it out first, then build.");return}
+  if(MB_SOLID[t]){mbMsg("That's solid "+t+". Dig it out first, then build.");return}
   mb.grid[f.r][f.c]="placed:"+mb.sel;mb.inv[mb.sel]--;
   if(mb.inv[mb.sel]<=0)mb.sel=null;
   var h=mbHouseCount();
-  mbMsg(h>=12?"🎉 House complete! You placed 12 blocks on the plot. Keep building anywhere you like!":"Placed a block. House on the plot: "+h+"/12.");
+  mbMsg(h>=12?"🎉 House complete! You filled the whole plot with 12 blocks. Keep building anywhere you like!":"Placed a block. House on the plot: "+h+"/12.");
   mbSync();mbRender();
 }
 function mbPickup(){
@@ -1425,29 +1482,51 @@ function mbPickup(){
   if(f.c<0||f.r<0||f.c>=MB_C||f.r>=MB_R){mbMsg("Nothing to pick up at the edge.");return}
   var t=mb.grid[f.r][f.c];
   if(t.indexOf("placed:")!==0){mbMsg("Pick Up only works on blocks you placed. Natural blocks need digging (and a correct answer).");return}
-  var res=t.slice(7);mb.grid[f.r][f.c]="grass";mb.inv[res]=(mb.inv[res]||0)+1;mb.sel=res;
+  var res=t.slice(7);mb.grid[f.r][f.c]="air";mb.inv[res]=(mb.inv[res]||0)+1;mb.sel=res;
   mbMsg("Picked up "+MB_NAMES[res]+" — it's back in your backpack, selected.");mbSync();mbRender();
 }
 var mbCanvas=document.getElementById("mbCanvas"),mbCtx=mbCanvas.getContext("2d");
 function mbRender(){
   if(!mb)mbNewWorld(false);
   var g=mbCtx;
-  for(var r=0;r<MB_R;r++)for(var c=0;c<MB_C;c++){
-    var inPlot=c>=PLOT.c0&&c<=PLOT.c1&&r>=PLOT.r0&&r<=PLOT.r1;
-    g.fillStyle=inPlot?"#a8c686":((c+r)%2?"#7fae5f":"#84b564");
-    g.fillRect(c*MB_T,r*MB_T,MB_T,MB_T);
-    var t=mb.grid[r][c];
-    g.font="24px serif";g.textAlign="center";
-    if(t==="pond"){g.fillStyle="#4a90c2";g.fillRect(c*MB_T,r*MB_T,MB_T,MB_T)}
-    else if(MB_EMOJI[t])g.fillText(MB_EMOJI[t],c*MB_T+20,r*MB_T+29);
-    else if(t.indexOf("placed:")===0)g.fillText(MB_BLOCK_EMOJI[t.slice(7)]||"🧱",c*MB_T+20,r*MB_T+29);
+  var camY=Math.max(0,Math.min(MB_R-MB_VIEW,mb.y-Math.floor(MB_VIEW/2)));
+  for(var vr=0;vr<MB_VIEW;vr++){
+    var r=vr+camY;
+    for(var c=0;c<MB_C;c++){
+      var x=c*MB_T,y=vr*MB_T,t=mb.grid[r][c];
+      var inPlot=c>=PLOT.c0&&c<=PLOT.c1&&r>=PLOT.r0&&r<=PLOT.r1;
+      if(t==="air"){
+        g.fillStyle=r<MB_SURF?(inPlot?"#bcd9a8":"#a8d3e8"):"#262019";
+        g.fillRect(x,y,MB_T,MB_T);
+      }else if(t.indexOf("placed:")===0){
+        g.fillStyle=r<MB_SURF?"#a8d3e8":"#262019";g.fillRect(x,y,MB_T,MB_T);
+        g.font="24px serif";g.textAlign="center";
+        g.fillText(MB_BLOCK_EMOJI[t.slice(7)]||"🧱",x+20,y+29);
+        g.strokeStyle="rgba(0,0,0,.35)";g.lineWidth=1;g.strokeRect(x+1.5,y+1.5,MB_T-3,MB_T-3);
+      }else if(t==="tree"){
+        g.fillStyle="#a8d3e8";g.fillRect(x,y,MB_T,MB_T);
+        g.font="27px serif";g.textAlign="center";g.fillText("🌲",x+20,y+31);
+      }else{
+        g.fillStyle=MB_FILL[t]||"#888";g.fillRect(x,y,MB_T,MB_T);
+        g.strokeStyle="rgba(0,0,0,.18)";g.lineWidth=1;g.strokeRect(x+0.5,y+0.5,MB_T-1,MB_T-1);
+        if(t==="grass"){g.fillStyle="#58a03c";g.fillRect(x,y,MB_T,13);g.fillStyle="#6fbf4d";g.fillRect(x,y,MB_T,5)}
+        var ore=MB_OREMARK[t];
+        if(ore){g.font="16px serif";g.textAlign="center";g.fillText(ore,x+12,y+16);g.fillText(ore,x+28,y+33)}
+      }
+      /* the deeper the row, the darker it gets */
+      if(r>=14){g.fillStyle="rgba(0,0,0,"+Math.min(0.30,(r-13)*0.02)+")";g.fillRect(x,y,MB_T,MB_T)}
+    }
   }
-  g.strokeStyle="#c98f1b";g.lineWidth=2.5;g.setLineDash([6,4]);
-  g.strokeRect(PLOT.c0*MB_T+2,PLOT.r0*MB_T+2,(PLOT.c1-PLOT.c0+1)*MB_T-4,(PLOT.r1-PLOT.r0+1)*MB_T-4);
-  g.setLineDash([]);g.lineWidth=1;
-  g.fillStyle="#22301f";g.font="bold 11px sans-serif";g.fillText("HOUSE PLOT", (PLOT.c0+PLOT.c1+1)*MB_T/2, PLOT.r0*MB_T+13);
+  /* house plot outline, when the surface is on screen */
+  if(camY<=PLOT.r1){
+    g.strokeStyle="#c98f1b";g.lineWidth=2.5;g.setLineDash([6,4]);
+    g.strokeRect(PLOT.c0*MB_T+2,(PLOT.r0-camY)*MB_T+2,(PLOT.c1-PLOT.c0+1)*MB_T-4,(PLOT.r1-PLOT.r0+1)*MB_T-4);
+    g.setLineDash([]);g.lineWidth=1;
+    g.fillStyle="#22301f";g.font="bold 11px sans-serif";g.textAlign="center";
+    g.fillText("HOUSE PLOT",(PLOT.c0+PLOT.c1+1)*MB_T/2,(PLOT.r0-camY)*MB_T+13);
+  }
   /* Steve: blocky character */
-  var sx=mb.x*MB_T,sy=mb.y*MB_T;
+  var sx=mb.x*MB_T,sy=(mb.y-camY)*MB_T;
   g.fillStyle="#3aa655";g.fillRect(sx+11,sy+16,18,14);       /* shirt */
   g.fillStyle="#3b5bbf";g.fillRect(sx+11,sy+30,18,8);        /* pants */
   g.fillStyle="#c98e5f";g.fillRect(sx+9,sy+3,22,14);         /* face */
@@ -1455,7 +1534,8 @@ function mbRender(){
   g.fillStyle="#22301f";g.fillRect(sx+13,sy+11,4,4);g.fillRect(sx+23,sy+11,4,4); /* eyes */
   /* facing marker */
   var f=mbFaced();g.strokeStyle="#fff";g.lineWidth=2;
-  if(f.c>=0&&f.r>=0&&f.c<MB_C&&f.r<MB_R)g.strokeRect(f.c*MB_T+2,f.r*MB_T+2,MB_T-4,MB_T-4);
+  var fr=f.r-camY;
+  if(f.c>=0&&f.r>=0&&f.c<MB_C&&f.r<MB_R&&fr>=0&&fr<MB_VIEW)g.strokeRect(f.c*MB_T+2,fr*MB_T+2,MB_T-4,MB_T-4);
   g.lineWidth=1;
   mbSync();
 }
