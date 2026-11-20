@@ -91,38 +91,59 @@ table.recipes td,table.recipes th{padding:8px 6px;border-bottom:1px solid var(--
 .matchrow .left{font-weight:800;min-width:110px}
 .matchrow select{flex:1;min-width:160px}
 footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:var(--ink2);font-size:.88rem;text-align:center}
-/* ---- 16:9 fit: game views lay out in columns and size their boards to the
-   viewport height, so on a 16:9 screen nothing needs scrolling. ---- */
-.td-layout,.mb-layout{display:flex;flex-direction:column;gap:12px}
-.td-side{display:flex;flex-direction:column;gap:12px}
-.mb-controls{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
-.mb-controls .acts{display:flex;flex-direction:column;gap:8px}
+/* ---- One-screen game window: Ch.4 + Ch.5 fit the viewport with no page
+   scroll on mobile or desktop. All panels (Quiz Gate, towers, save,
+   backpack, crafting, tower detail) open as overlays INSIDE the board. ---- */
+body.game-mode{overflow:hidden;height:100dvh}
+body.game-mode .wrap{height:100dvh;max-width:1180px;display:flex;flex-direction:column;padding-bottom:6px;overflow:hidden}
+body.game-mode .gamebar{padding:6px 0;flex:0 0 auto}
+#view-ch4.on,#view-ch5.on{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+.game-shell{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:8px;overflow:hidden}
+.game-hud{display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex:0 0 auto}
+.game-hud .stat{background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:.22rem .6rem;font-weight:800;font-size:.86rem}
+.game-status{flex:0 0 auto;font-size:.86rem;font-weight:700;line-height:1.3;min-height:1.15em;max-height:2.3em;overflow:hidden;margin:0}
+.game-board-wrap{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:12px}
+#tdCanvas{width:min(100%,calc((100dvh - 218px)*1.5));width:min(100%,calc((100vh - 218px)*1.5));max-height:100%;height:auto;margin:0 auto}
+#mbCanvas{width:min(100%,calc((100dvh - 248px)*0.875));width:min(100%,calc((100vh - 248px)*0.875));max-height:100%;height:auto;margin:0 auto}
+.game-toolbar{flex:0 0 auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center}
+.game-toolbar button{padding:.38rem .65rem;font-size:.9rem}
+.game-toolbar button.toggle-on{outline:3px solid var(--gold);outline-offset:1px}
+.game-toolbar .needs-attn{border-color:var(--gold);background:var(--gold-bg)}
+/* Overlay menus inside the game window */
+.game-overlay{position:absolute;top:8px;right:8px;bottom:8px;width:min(400px,calc(100% - 16px));background:var(--paper);border:1.5px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.28);padding:12px;overflow-y:auto;display:none;z-index:6;text-align:left}
+.game-overlay.open{display:block}
+.game-overlay h3{margin:0;font-size:1rem}
+.game-overlay .opt{padding:.45rem .7rem;margin:5px 0;font-size:.95rem}
+.game-overlay .shop{grid-template-columns:1fr;margin:6px 0}
+.game-overlay .shop button{padding:.45rem .6rem}
+.game-overlay-bottom{top:auto;left:8px;right:8px;bottom:8px;width:auto;max-height:46%}
+.overlay-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.overlay-head .spacer{flex:1}
+.overlay-close{min-height:2rem;padding:.2rem .6rem}
+.mb-bottom{flex:0 0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.mb-bottom .acts{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.mb-bottom .acts button{padding:.38rem .6rem;font-size:.88rem}
+.mb-bottom .dpad{grid-template-columns:repeat(3,44px);gap:5px;margin:0}
+.mb-bottom .dpad button{height:44px;min-height:44px}
+@media(max-width:560px){
+  .wrap{padding:0 8px 24px}
+  body.game-mode .wrap{padding:0 6px 6px}
+  .game-shell{padding:6px;border-radius:10px}
+  .game-hud .stat{font-size:.78rem;padding:.18rem .5rem}
+  #tdCanvas{width:min(100%,calc((100dvh - 232px)*1.5))}
+  #mbCanvas{width:min(100%,calc((100dvh - 268px)*0.875))}
+  .mb-bottom{justify-content:center}
+  .mb-bottom .acts{justify-content:center}
+  .game-overlay{left:8px;width:auto}
+}
 @media(min-width:1000px){
-  .wrap{max-width:1560px;padding-bottom:8px}
-  .gamebar{padding:6px 0}
+  .wrap{max-width:1180px}
   header.top{padding:10px 0 8px;margin-bottom:12px}
   .hero{padding:20px 20px 16px}
   .hero h1{font-size:1.7rem}
   #homeGrid{grid-template-columns:repeat(3,1fr)}
   .chap{padding:14px}
   footer{margin-top:16px;padding-top:10px}
-  .td-layout{flex-direction:row;align-items:flex-start}
-  .td-main{flex:1 1 auto;min-width:0}
-  .td-main .hud{margin-top:0}
-  .td-side{flex:0 0 430px}
-  .td-side .card{padding:12px}
-  .td-side .opt{padding:.38rem .6rem;margin:4px 0;font-size:.95rem}
-  .td-side .shop{grid-template-columns:1fr 1fr;margin:0}
-  .td-side .shop button{padding:.45rem .6rem}
-  .td-side .shop .tdesc{font-size:.76rem;line-height:1.25}
-  #tdCanvas{width:min(100%,max(320px,calc((100vh - 360px)*1.5)));width:min(100%,max(320px,calc((100dvh - 360px)*1.5)));margin:0 auto}
-  .mb-layout{flex-direction:row;align-items:flex-start}
-  .mb-main{flex:0 1 auto}
-  .mb-main .hud{margin-top:0}
-  .mb-side{flex:1 1 320px;min-width:290px}
-  #mbCanvas{width:auto;height:max(280px,min(calc(100vh - 400px),600px));height:max(280px,min(calc(100dvh - 400px),600px));max-width:100%}
-  .mb-controls{flex-wrap:nowrap}
-  .mb-controls .acts{display:grid;grid-template-columns:1fr 1fr;flex:0 1 350px}
 }
 /* Save game as a compact strip under the tower-defense board */
 .td-save{display:flex;flex-direction:column;gap:6px;margin-top:10px;padding:12px 14px}
@@ -134,10 +155,15 @@ footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:v
 #tdSlots .slot .row{gap:6px}
 #tdSlots .slot button{padding:.25rem .6rem;min-height:2rem}
 @media(min-width:760px){
-  .td-save{flex-direction:row;align-items:flex-start}
+  .td-save{flex-direction:row;align-items:flex-start;flex-wrap:wrap}
   .td-save-head{flex:0 0 190px}
   #tdSlots{flex:1;grid-template-columns:repeat(3,1fr)}
 }
+.td-sync{flex:1 1 100%;border-top:1.5px solid var(--line);margin-top:10px;padding-top:12px}
+.td-sync h4{margin:0 0 4px}
+.td-sync .code-display{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.08rem;font-weight:800;letter-spacing:.05em;word-break:break-all}
+.td-sync input{max-width:340px}
+#tdSyncMsg,#tdSyncStatus{min-height:1.4em}
 @media(min-width:1000px) and (max-height:850px){
   #tdCanvas{width:min(100%,max(320px,calc((100vh - 390px)*1.5)));width:min(100%,max(320px,calc((100dvh - 390px)*1.5)))}
   .td-side .opt{padding:.3rem .6rem}
@@ -200,7 +226,8 @@ footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:v
   <!-- ============ POOL MAKER ============ -->
   <section class="view" id="view-pools">
     <h2>Pool Maker</h2>
-    <p class="small">Pools you make here live in this tab and work in Chapters 1–3 and at the Chapter 4 Quiz Gate and Chapter 5 digging questions. The starter pools are always here.</p>
+    <p class="small">Pools you make here stay on this device and work in Chapters 1–3 and at the Chapter 4 Quiz Gate and Chapter 5 digging questions. The starter pools are always here.</p>
+    <p class="small" id="poolSyncNote" style="display:none"></p>
     <div class="grid cols2">
       <div class="card">
         <h3 style="margin-top:0">New pool</h3>
@@ -281,26 +308,40 @@ footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:v
 
   <!-- ============ CH 4 : TOWER DEFENSE ============ -->
   <section class="view" id="view-ch4">
-    <div class="td-layout">
-      <div class="td-main">
-        <div class="hud">
-          <span class="stat">🪙 Gold <span id="tdGold">180</span></span>
-          <span class="stat">❤️ Lives <span id="tdLives">20</span></span>
-          <span class="stat">🌊 Wave <span id="tdWave">0</span></span>
-          <span class="stat">👾 On field <span id="tdField">0</span></span>
-          <span class="stat">🏰 Towers <span id="tdTowers">0</span></span>
-          <span class="stat" id="tdKills">Wave 0 · 0 stopped</span>
-        </div>
-        <p class="msg" id="tdMsg">Pick a tower, tap a grass square to build it, answer the 3 gate questions, then press Start Wave.</p>
+    <div class="game-shell">
+      <div class="game-hud">
+        <span class="stat">🪙 <span id="tdGold">180</span></span>
+        <span class="stat">❤️ <span id="tdLives">20</span></span>
+        <span class="stat">🌊 Wave <span id="tdWave">0</span></span>
+        <span class="stat">👾 <span id="tdField">0</span></span>
+        <span class="stat">🏰 <span id="tdTowers">0</span></span>
+        <span class="stat" id="tdKills">Wave 0 · 0 stopped</span>
+      </div>
+      <p class="game-status" id="tdMsg">Pick a tower, tap a grass square to build it, answer the 3 gate questions, then press Start Wave.</p>
+      <div class="game-board-wrap" id="tdBoardWrap">
         <canvas class="game" id="tdCanvas" width="720" height="480" aria-label="Tower defense board. Tap a grass square to build the selected tower."></canvas>
-        <div class="row" style="margin-top:10px">
-          <button class="primary" id="tdStart">▶ Start wave</button>
-          <button id="tdPause">Pause</button>
-          <button id="tdSpeed">Speed: 1×</button>
-          <button id="tdRestart">Restart</button>
-          <button class="gold" id="tdPlayAgain" style="display:none">Play again</button>
+
+        <div class="game-overlay" id="tdGatePanel" role="dialog" aria-label="Quiz Gate">
+          <div class="overlay-head"><h3>🚪 Quiz Gate — Wave <span id="tdGateWave">1</span></h3><span class="spacer"></span><button class="overlay-close" data-close-overlay="tdGatePanel" aria-label="Close Quiz Gate">✕</button></div>
+          <p class="small" id="tdGatePool" style="margin:0 0 6px"></p>
+          <div id="tdGateBody"></div>
         </div>
-        <div class="card" id="tdTowerCard" style="display:none;margin-top:10px">
+
+        <div class="game-overlay" id="tdShopPanel" role="dialog" aria-label="Build a tower">
+          <div class="overlay-head"><h3>Build a tower</h3><span class="spacer"></span><button class="overlay-close" data-close-overlay="tdShopPanel" aria-label="Close tower shop">✕</button></div>
+          <p class="small" style="margin:0">Tap a tower to select it, close this menu, then tap a grass square on the board to build it.</p>
+          <div class="shop" id="tdShop"></div>
+        </div>
+
+        <div class="game-overlay" id="tdSavePanel" role="dialog" aria-label="Save game">
+          <div class="overlay-head"><h3>Save game</h3><span class="spacer"></span><button class="overlay-close" data-close-overlay="tdSavePanel" aria-label="Close save menu">✕</button></div>
+          <span class="small" id="tdSaveNote"></span>
+          <p class="small">Saves stay on this device and sync across devices with a code. Saving is available between waves.</p>
+          <div id="tdSlots"></div>
+          <div class="td-sync" id="tdSyncArea"></div>
+        </div>
+
+        <div class="game-overlay game-overlay-bottom" id="tdTowerCard" style="display:none" role="dialog" aria-label="Selected tower">
           <div class="row">
             <strong id="tdTowerName"></strong><span id="tdTowerStats" class="small grow"></span>
             <button class="primary" id="tdUpgrade">Upgrade</button>
@@ -309,63 +350,62 @@ footer{border-top:2px solid var(--line);margin-top:34px;padding-top:14px;color:v
           </div>
         </div>
       </div>
-      <div class="td-side">
-        <div class="card">
-          <div class="row"><h3 style="margin:0">🚪 Quiz Gate — Wave <span id="tdGateWave">1</span></h3><span class="small grow" id="tdGatePool"></span></div>
-          <div id="tdGateBody"></div>
-        </div>
-        <h3 style="margin:0">Build a tower</h3>
-        <div class="shop" id="tdShop"></div>
+      <div class="game-toolbar">
+        <button class="primary" id="tdStart">▶ Start wave</button>
+        <button id="tdGateBtn">🚪 Quiz Gate</button>
+        <button id="tdShopBtn">🏰 Towers</button>
+        <button id="tdSaveBtn">💾 Save</button>
+        <button id="tdPause">Pause</button>
+        <button id="tdSpeed">Speed: 1×</button>
+        <button id="tdRestart">Restart</button>
+        <button class="gold" id="tdPlayAgain" style="display:none">Play again</button>
       </div>
-    </div>
-    <div class="card td-save">
-      <div class="td-save-head">
-        <h3>Save game</h3>
-        <span class="small" id="tdSaveNote"></span>
-        <p class="small">Saves live in this tab only. Saving is available between waves.</p>
-      </div>
-      <div id="tdSlots"></div>
     </div>
   </section>
 
   <!-- ============ CH 5 : MINE & BUILD ============ -->
   <section class="view" id="view-ch5">
-    <p class="msg" id="mbMsg" style="margin:0 0 10px">Steve starts on the grass. Move with the arrow keys, WASD, or the pad — face down and press Dig to start your mine shaft. One correct answer mines three blocks, and the deeper you go, the rarer the ore.</p>
-    <div class="mb-layout">
-      <div class="mb-main">
-        <div class="hud">
-          <span class="stat">⭐ XP <span id="mbXp">0</span></span>
-          <span class="stat">⛏️ <span id="mbPick">Wooden Pickaxe</span></span>
-          <span class="stat">⬇️ Depth <span id="mbDepth">0</span></span>
-          <span class="stat">🏠 House on plot: <span id="mbHouse">0</span>/12</span>
-          <span class="stat" id="mbPos"></span>
-        </div>
+    <div class="game-shell">
+      <div class="game-hud">
+        <span class="stat">⭐ <span id="mbXp">0</span> XP</span>
+        <span class="stat">⛏️ <span id="mbPick">Wooden Pickaxe</span></span>
+        <span class="stat">⬇️ Depth <span id="mbDepth">0</span></span>
+        <span class="stat">🏠 <span id="mbHouse">0</span>/12</span>
+        <span class="stat" id="mbPos"></span>
+      </div>
+      <p class="game-status" id="mbMsg">Steve starts on the grass. Move with the arrow keys, WASD, or the pad — face down and press Dig to start your mine shaft.</p>
+      <div class="game-board-wrap" id="mbBoardWrap">
         <canvas class="game" id="mbCanvas" width="560" height="640" tabindex="0" aria-label="Mine and Build world. Use arrow keys or WASD to move Steve, and dig down through the layers."></canvas>
-        <div class="mb-controls">
-          <div class="acts">
-            <button class="primary" id="mbDig">⛏️ Dig (Space)</button>
-            <button id="mbBuild">🧱 Build (B)</button>
-            <button id="mbPickup">✋ Pick up block</button>
-            <button id="mbExplore">🗺️ Explore new area</button>
-          </div>
-          <div class="dpad" style="margin-top:0" aria-label="Move pad">
-            <span></span><button data-dir="up" aria-label="Move up">▲</button><span></span>
-            <button data-dir="left" aria-label="Move left">◀</button><button data-dir="down" aria-label="Move down">▼</button><button data-dir="right" aria-label="Move right">▶</button>
-          </div>
+
+        <div class="game-overlay" id="mbInvPanel" role="dialog" aria-label="Backpack">
+          <div class="overlay-head"><h3>🎒 Backpack</h3><span class="spacer"></span><button class="overlay-close" data-close-overlay="mbInvPanel" aria-label="Close backpack">✕</button></div>
+          <p class="small" style="margin:0">Tap a block to select it for building, then close this menu and press Build.</p>
+          <div class="inv" id="mbInv"></div>
+        </div>
+
+        <div class="game-overlay" id="mbCraftPanel" role="dialog" aria-label="Crafting Table">
+          <div class="overlay-head"><h3>🔨 Crafting Table</h3><span class="spacer"></span><button class="overlay-close" data-close-overlay="mbCraftPanel" aria-label="Close crafting">✕</button></div>
+          <table class="recipes"><thead><tr><th>Recipe</th><th>You need</th><th></th></tr></thead><tbody id="mbRecipes"></tbody></table>
         </div>
       </div>
-      <div class="mb-side">
-        <h3 style="margin-top:0">🎒 Backpack — tap a block to select it for building</h3>
-        <div class="inv" id="mbInv"></div>
-        <div class="card">
-          <h3 style="margin-top:0">🔨 Crafting Table</h3>
-          <table class="recipes"><thead><tr><th>Recipe</th><th>You need</th><th></th></tr></thead><tbody id="mbRecipes"></tbody></table>
+      <div class="mb-bottom">
+        <div class="acts">
+          <button class="primary" id="mbDig">⛏️ Dig</button>
+          <button id="mbBuild">🧱 Build</button>
+          <button id="mbInvBtn">🎒 Backpack</button>
+          <button id="mbCraftBtn">🔨 Craft</button>
+          <button id="mbPickup">✋ Pick up</button>
+          <button id="mbExplore">🗺️ New area</button>
+        </div>
+        <div class="dpad" aria-label="Move pad">
+          <span></span><button data-dir="up" aria-label="Move up">▲</button><span></span>
+          <button data-dir="left" aria-label="Move left">◀</button><button data-dir="down" aria-label="Move down">▼</button><button data-dir="right" aria-label="Move right">▶</button>
         </div>
       </div>
     </div>
   </section>
 
-  <footer>The Booklet — five chapters, one question pool at a time. Pools and tower-defense saves live in this tab only.</footer>
+  <footer>The Booklet — five chapters, one question pool at a time. Pools and tower-defense saves stay on this device and sync across devices with a code.</footer>
 </div>
 
 <!-- Quiz modal (Quiz Gate + digging questions) -->
@@ -433,6 +473,16 @@ function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(M
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
 
 /* ================= NAV ================= */
+function closeAllGameOverlays(){
+  document.querySelectorAll(".game-overlay.open").forEach(function(el){el.classList.remove("open")});
+  document.querySelectorAll(".game-toolbar button.toggle-on,.mb-bottom button.toggle-on").forEach(function(b){b.classList.remove("toggle-on")});
+}
+function toggleGameOverlay(id,btn){
+  var el=document.getElementById(id);if(!el)return;
+  var was=el.classList.contains("open");
+  closeAllGameOverlays();
+  if(!was){el.classList.add("open");if(btn)btn.classList.add("toggle-on")}
+}
 var currentView="home";
 function showView(v){
   currentView=v;
@@ -440,6 +490,8 @@ function showView(v){
   for(var i=0;i<views.length;i++)views[i].classList.remove("on");
   document.getElementById("view-"+v).classList.add("on");
   var inGame=(v==="ch4"||v==="ch5");
+  document.body.classList.toggle("game-mode",inGame);
+  closeAllGameOverlays();
   document.getElementById("mainHeader").style.display=inGame?"none":"flex";
   document.querySelector("footer").style.display=inGame?"none":"";
   document.getElementById("gameBar").classList.toggle("show",inGame);
@@ -456,6 +508,20 @@ document.addEventListener("click",function(e){
   showView(t.getAttribute("data-nav"));
 });
 document.getElementById("gameHomeBtn").addEventListener("click",function(){showView("home")});
+/* In-window menu toggles: panels open inside the board, never as page sections */
+document.getElementById("tdGateBtn").addEventListener("click",function(){toggleGameOverlay("tdGatePanel",this);this.blur()});
+document.getElementById("tdShopBtn").addEventListener("click",function(){toggleGameOverlay("tdShopPanel",this);this.blur()});
+document.getElementById("tdSaveBtn").addEventListener("click",function(){toggleGameOverlay("tdSavePanel",this);this.blur()});
+document.getElementById("mbInvBtn").addEventListener("click",function(){toggleGameOverlay("mbInvPanel",this);refocus()});
+document.getElementById("mbCraftBtn").addEventListener("click",function(){toggleGameOverlay("mbCraftPanel",this);refocus()});
+document.querySelectorAll("[data-close-overlay]").forEach(function(b){
+  b.addEventListener("click",function(){
+    var el=document.getElementById(b.getAttribute("data-close-overlay"));if(el)el.classList.remove("open");
+    document.querySelectorAll(".toggle-on").forEach(function(x){x.classList.remove("toggle-on")});
+    b.blur();
+    if(currentView==="ch5")refocus();
+  });
+});
 
 /* pool selects */
 function refreshPoolUI(){
@@ -484,6 +550,7 @@ document.getElementById("createPoolBtn").addEventListener("click",function(){
   var msg=document.getElementById("poolMsg");
   if(!n){msg.textContent="Give the pool a name first.";return}
   var p={id:"pool-"+Date.now(),name:n,questions:[]};pools.push(p);activePoolId=p.id;
+  persistCustomPools();pushSync();
   document.getElementById("newPoolName").value="";msg.textContent="Pool created — add questions to it on the right.";
   refreshPoolUI();document.getElementById("addToPool").value=p.id;
 });
@@ -515,6 +582,7 @@ document.getElementById("addQBtn").addEventListener("click",function(){
     document.getElementById("matchText").value="";
   }
   msg.textContent="Added to “"+p.name+"” — it now has "+p.questions.length+" questions.";
+  persistCustomPools();pushSync();
   refreshPoolUI();
 });
 
@@ -776,7 +844,7 @@ function tdAnswerGate(opt){
     tdGate.busy=true;
     setTimeout(function(){
       tdGate.busy=false;tdGate.picked=null;
-      if(tdGate.idx+1>=tdGate.qs.length){tdGate.done=true;tdMsg("Correct! The gate is open — you can start the wave.")}
+      if(tdGate.idx+1>=tdGate.qs.length){tdGate.done=true;tdMsg("Correct! The gate is open — you can start the wave.");var gp=document.getElementById("tdGatePanel");if(gp)setTimeout(function(){gp.classList.remove("open")},700)}
       else{tdGate.idx++;tdMsg("Correct! Next gate question…")}
       tdRenderGate();tdSyncHud();
     },650);
@@ -800,7 +868,7 @@ function tdSyncHud(){
     if(td.gold<def.cost)b.style.opacity="0.6";
     var detail=k==="barracks"?("Defenders hit for "+def.defenderDamage+", one every "+def.spawnEvery+"s"):("Dmg "+def.damage+" · Range "+Math.round(def.range/TD_CELL*10)/10);
     b.innerHTML="<span class='tname'><span style='display:inline-block;width:1.5em;text-align:center;border-radius:6px;color:#fff;background:"+def.dark+";margin-right:.4em'>"+def.letter+"</span>"+def.name+" — "+def.cost+"g</span><span class='tdesc'>"+def.desc+" · "+detail+"</span>";
-    b.addEventListener("click",function(){tdSelType=k;tdSyncHud();tdDraw()});
+    b.addEventListener("click",function(){tdSelType=k;tdSyncHud();tdDraw();var sp=document.getElementById("tdShopPanel");if(sp)sp.classList.remove("open");var sb=document.getElementById("tdShopBtn");if(sb)sb.classList.remove("toggle-on");tdMsg(def.name+" selected — tap a grass square on the board to build it.")});
     shop.appendChild(b);
   });
   var start=document.getElementById("tdStart");
@@ -808,6 +876,8 @@ function tdSyncHud(){
   start.textContent=td.waveActive?("Wave "+td.wave+" in progress… ("+(td.enemies.length+td.spawnQueue.length)+" left)"):(!tdGate.done&&!td.gameOver?("🔒 Answer "+(tdGate.qs.length||3)+" questions to unlock Wave "+(td.wave+1)):("▶ Start Wave "+(td.wave+1)));
   document.getElementById("tdPause").disabled=td.gameOver;
   document.getElementById("tdPlayAgain").style.display=td.gameOver?"inline-block":"none";
+  var gb=document.getElementById("tdGateBtn");
+  if(gb)gb.classList.toggle("needs-attn",!td.waveActive&&!td.gameOver&&!tdGate.done);
   tdRenderSlots();
 }
 function tdRenderSlots(){
@@ -824,7 +894,7 @@ function tdRenderSlots(){
     var bl=document.createElement("button");bl.textContent="Load";bl.disabled=!sv;
     bl.addEventListener("click",function(){tdLoadSlot(i)});
     row.appendChild(bs);row.appendChild(bl);
-    if(sv){var bc=document.createElement("button");bc.textContent="Clear";bc.addEventListener("click",function(){tdSaves[i]=null;document.getElementById("tdSaveNote").textContent="Slot "+(i+1)+" cleared.";tdSyncHud()});row.appendChild(bc)}
+    if(sv){var bc=document.createElement("button");bc.textContent="Clear";bc.addEventListener("click",function(){tdSaves[i]=null;persistTdSaves();pushSync();document.getElementById("tdSaveNote").textContent="Slot "+(i+1)+" cleared.";tdSyncHud()});row.appendChild(bc)}
     wrap.appendChild(d);
   });
 }
@@ -833,6 +903,7 @@ function tdSaveSlot(i){
   var data=JSON.stringify({gold:td.gold,lives:td.lives,wave:td.wave,kills:td.kills,nextId:td.nextId,towers:td.towers.map(function(t){return{c:t.c,r:t.r,type:t.type,level:t.level}})});
   var now=new Date();
   tdSaves[i]={data:data,wave:td.wave,gold:Math.floor(td.gold),lives:td.lives,when:now.toLocaleDateString(undefined,{month:"short",day:"numeric"})+" "+now.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})};
+  persistTdSaves();pushSync();
   document.getElementById("tdSaveNote").textContent="Saved to Slot "+(i+1)+".";
   tdSyncHud();
 }
@@ -885,9 +956,10 @@ tdCanvas.addEventListener("click",function(e){
 });
 function tdShowTowerCard(){
   var t=tdSelTower(),card=document.getElementById("tdTowerCard");
-  if(!t){card.style.display="none";return}
+  if(!t){card.style.display="none";card.classList.remove("open");return}
   var def=TOWER_DEFS[t.type];
-  card.style.display="block";
+  if(document.querySelector(".game-overlay.open:not(#tdTowerCard)")){card.classList.remove("open");return}
+  card.style.display="";card.classList.add("open");
   document.getElementById("tdTowerName").textContent=def.name+" · Level "+t.level+(t.level>=TD_MAX_LEVEL?" (max)":"");
   if(t.type==="barracks"){var ds=tdDefenderStats(t.level);document.getElementById("tdTowerStats").textContent="Defenders: "+ds.hp+" health · "+ds.damage+" damage · up to "+ds.max+" out at once"}
   else{var st=tdTowerStats(t.type,t.level);document.getElementById("tdTowerStats").textContent="Damage "+st.damage+" · Range "+(Math.round(st.range/TD_CELL*10)/10)}
@@ -916,7 +988,7 @@ document.getElementById("tdSell").addEventListener("click",function(){
 document.getElementById("tdCloseCard").addEventListener("click",function(){tdSelTowerId=null;tdShowTowerCard();tdDraw()});
 document.getElementById("tdStart").addEventListener("click",function(){
   if(!td||td.waveActive||td.gameOver)return;
-  if(!tdGate.done){tdMsg("The gate is locked — answer the 3 questions below the board first.");return}
+  if(!tdGate.done){tdMsg("The gate is locked — answer the 3 questions in the Quiz Gate menu first.");toggleGameOverlay("tdGatePanel",document.getElementById("tdGateBtn"));return}
   td.wave++;td.spawnQueue=tdWaveComposition(td.wave);td.spawnTimer=0.2;td.waveActive=true;
   if(td.wave%10===0)tdMsg("Wave "+td.wave+" — BOSS WAVE! A crowned boss leads a small escort. It's worth 150 gold, but if it reaches the castle it costs 5 lives!");
   else if(td.wave===11)tdMsg("Wave "+td.wave+" incoming — "+td.spawnQueue.length+" enemies, and some of them can FLY! Defenders can't reach flyers — your towers will have to handle those.");
@@ -1444,7 +1516,7 @@ function mbSync(){
     var b=document.createElement("button");
     if(mb.sel===k)b.className="sel";
     b.textContent=MB_BLOCK_EMOJI[k]+" "+MB_NAMES[k]+" ×"+n;
-    b.addEventListener("click",function(){mb.sel=k;mbMsg(MB_NAMES[k]+" selected for building. Face an empty tile and press Build.");mbSync();refocus()});
+    b.addEventListener("click",function(){mb.sel=k;mbMsg(MB_NAMES[k]+" selected for building. Face an empty tile and press Build.");mbSync();var ip=document.getElementById("mbInvPanel");if(ip)ip.classList.remove("open");var ib=document.getElementById("mbInvBtn");if(ib)ib.classList.remove("toggle-on");refocus()});
     inv.appendChild(b);
   });
   if(!any)inv.innerHTML="<span class='small'>Empty — dig trees and dig down through the layers to fill it.</span>";
@@ -1599,8 +1671,238 @@ window.addEventListener("keydown",function(e){
   else if(k==="p"||k==="P"){e.preventDefault();mbPickup()}
 });
 
+/* ================= PERSISTENCE + SAVE CODES ================= */
+/* Layer 1: localStorage, so saves and custom pools survive a reload on
+   this device with no code at all. Layer 2: an optional save code syncs
+   the same data across devices via /api/game-saves (QuickJoin site only);
+   every API failure leaves the local layer untouched. */
+var gameCode=null,gameVersion=0,syncPollTimer=null,syncStatusText="",syncMsgText="";
+function persistTdSaves(){try{localStorage.setItem("booklet-td-saves",JSON.stringify(tdSaves))}catch(e){}}
+function loadTdSaves(){
+  try{
+    var raw=localStorage.getItem("booklet-td-saves");
+    if(!raw)return;
+    var parsed=JSON.parse(raw);
+    if(parsed&&typeof parsed.length==="number")tdSaves=[parsed[0]||null,parsed[1]||null,parsed[2]||null];
+  }catch(e){tdSaves=[null,null,null]}
+}
+function customPoolsOnly(){return pools.filter(function(p){return p.id&&p.id.indexOf("pool-")===0})}
+function persistCustomPools(){try{localStorage.setItem("booklet-custom-pools",JSON.stringify(customPoolsOnly()))}catch(e){}}
+function loadCustomPools(){
+  try{
+    var raw=localStorage.getItem("booklet-custom-pools");
+    if(!raw)return;
+    var arr=JSON.parse(raw);
+    if(!arr||typeof arr.length!=="number")return;
+    arr.forEach(function(p){
+      if(!p||!p.id||p.id.indexOf("pool-")!==0||!p.name||!p.questions||typeof p.questions.length!=="number")return;
+      var exists=false;pools.forEach(function(x){if(x.id===p.id)exists=true});
+      if(!exists)pools.push(p);
+    });
+  }catch(e){}
+}
+function getSyncData(){return{tdSaves:[tdSaves[0]||null,tdSaves[1]||null,tdSaves[2]||null],pools:customPoolsOnly()}}
+function applySyncData(data){
+  if(!data)return;
+  if(data.tdSaves&&typeof data.tdSaves.length==="number"){
+    tdSaves=[data.tdSaves[0]||null,data.tdSaves[1]||null,data.tdSaves[2]||null];
+    persistTdSaves();
+  }
+  if(data.pools&&typeof data.pools.length==="number"){
+    pools=pools.filter(function(p){return !(p.id&&p.id.indexOf("pool-")===0)});
+    data.pools.forEach(function(p){if(p&&p.id&&p.id.indexOf("pool-")===0&&p.name&&p.questions)pools.push(p)});
+    persistCustomPools();
+    var found=false;pools.forEach(function(p){if(p.id===activePoolId)found=true});
+    if(!found)activePoolId=pools[0].id;
+    refreshPoolUI();
+  }
+  if(td)tdSyncHud();else if(document.getElementById("tdSlots"))tdRenderSlots();
+  renderSyncUI();
+}
+function normalizeGameCode(s){return String(s||"").toUpperCase().replace(/[^A-Z0-9]/g,"")}
+function formatGameCode(raw){
+  var n=normalizeGameCode(raw);
+  if(n.length!==20)return String(raw||"");
+  return n.slice(0,4)+"-"+n.slice(4,8)+"-"+n.slice(8,12)+"-"+n.slice(12,16)+"-"+n.slice(16,20);
+}
+function setSyncStatus(t){
+  syncStatusText=t;
+  var el=document.getElementById("tdSyncStatus");
+  if(el)el.textContent=t;
+}
+function setSyncMsg(t){
+  syncMsgText=t;
+  var el=document.getElementById("tdSyncMsg");
+  if(el)el.textContent=t;
+}
+function renderSyncUI(){
+  var area=document.getElementById("tdSyncArea");
+  if(!area)return;
+  area.innerHTML="";
+  var note=document.getElementById("poolSyncNote");
+  if(gameCode){
+    if(note){note.style.display="block";note.textContent="Your pools sync with save code "+formatGameCode(gameCode)+"."}
+    var h=document.createElement("h4");h.textContent="Sync with code";area.appendChild(h);
+    var row=document.createElement("div");row.className="row";
+    var lab=document.createElement("span");lab.innerHTML="Your save code: <span class='code-display'>"+esc(formatGameCode(gameCode))+"</span>";
+    row.appendChild(lab);
+    var bc=document.createElement("button");bc.textContent="Copy";
+    bc.addEventListener("click",function(){
+      var txt=formatGameCode(gameCode);
+      function done(){bc.textContent="Copied!";setTimeout(function(){bc.textContent="Copy"},1500)}
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done,done);
+      else{
+        var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();
+        try{document.execCommand("copy")}catch(e){}
+        document.body.removeChild(ta);done();
+      }
+      bc.blur();
+    });
+    row.appendChild(bc);
+    var bs=document.createElement("button");bs.textContent="Stop syncing";
+    bs.addEventListener("click",function(){stopSyncing();bs.blur()});
+    row.appendChild(bs);
+    area.appendChild(row);
+    var st=document.createElement("p");st.className="small";st.id="tdSyncStatus";st.textContent=syncStatusText||"Synced";
+    area.appendChild(st);
+  }else{
+    if(note){note.style.display="none";note.textContent=""}
+    var h2=document.createElement("h4");h2.textContent="Sync with code";area.appendChild(h2);
+    var p=document.createElement("p");p.className="small";p.style.margin="0 0 8px";
+    p.textContent="One code syncs your tower-defense saves and custom pools across devices — like the task app.";
+    area.appendChild(p);
+    var row2=document.createElement("div");row2.className="row";
+    var create=document.createElement("button");create.className="primary";create.textContent="Create save code";
+    create.addEventListener("click",function(){createGameCode();create.blur()});
+    row2.appendChild(create);
+    var inp=document.createElement("input");inp.id="tdCodeInput";inp.placeholder="XXXX-XXXX-XXXX-XXXX-XXXX";inp.setAttribute("aria-label","Save code");inp.autocomplete="off";inp.spellcheck=false;
+    row2.appendChild(inp);
+    var open=document.createElement("button");open.textContent="Open with code";
+    open.addEventListener("click",function(){openGameCode(inp.value);open.blur()});
+    row2.appendChild(open);
+    area.appendChild(row2);
+    var m=document.createElement("p");m.className="small";m.id="tdSyncMsg";m.textContent=syncMsgText;
+    area.appendChild(m);
+  }
+}
+function activateGameCode(code,version){
+  gameCode=normalizeGameCode(code);
+  if(typeof version==="number")gameVersion=version;
+  try{localStorage.setItem("booklet-game-code",gameCode)}catch(e){}
+  try{history.replaceState(null,"","#game="+formatGameCode(gameCode))}catch(e){try{location.hash="game="+formatGameCode(gameCode)}catch(e2){}}
+  startSyncPolling();
+  renderSyncUI();
+}
+function stopSyncing(){
+  gameCode=null;gameVersion=0;syncStatusText="";syncMsgText="";
+  try{localStorage.removeItem("booklet-game-code")}catch(e){}
+  try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
+  stopSyncPolling();
+  renderSyncUI();
+}
+function startSyncPolling(){
+  stopSyncPolling();
+  syncPollTimer=setInterval(function(){pullSync()},10000);
+}
+function stopSyncPolling(){if(syncPollTimer){clearInterval(syncPollTimer);syncPollTimer=null}}
+function pullSync(){
+  if(!gameCode)return;
+  fetch("/api/game-saves",{method:"GET",headers:{"x-game-code":gameCode}})
+    .then(function(res){if(!res.ok)throw new Error("pull failed");return res.json()})
+    .then(function(json){
+      if(json&&typeof json.version==="number"&&json.version>gameVersion){
+        gameVersion=json.version;
+        if(json.data)applySyncData(json.data);
+      }
+      setSyncStatus("Synced");
+    })
+    .catch(function(){setSyncStatus("Couldn't reach the server — your saves are still stored on this device")});
+}
+function pushSync(){
+  if(!gameCode)return;
+  var localData=getSyncData();
+  setSyncStatus("Syncing…");
+  fetch("/api/game-saves",{method:"POST",headers:{"Content-Type":"application/json","x-game-code":gameCode},body:JSON.stringify({action:"save",data:localData,version:gameVersion})})
+    .then(function(res){
+      if(res.status===409){
+        /* stale version: learn the current version, then retry once
+           with the same local data */
+        return fetch("/api/game-saves",{method:"GET",headers:{"x-game-code":gameCode}})
+          .then(function(r2){if(!r2.ok)throw new Error("re-read failed");return r2.json()})
+          .then(function(j2){
+            if(j2&&typeof j2.version==="number")gameVersion=j2.version;
+            return fetch("/api/game-saves",{method:"POST",headers:{"Content-Type":"application/json","x-game-code":gameCode},body:JSON.stringify({action:"save",data:localData,version:gameVersion})});
+          })
+          .then(function(r3){if(!r3.ok)throw new Error("retry failed");return r3.json()})
+          .then(function(j3){if(j3&&typeof j3.version==="number")gameVersion=j3.version;setSyncStatus("Synced")});
+      }
+      if(!res.ok)throw new Error("push failed");
+      return res.json().then(function(json){if(json&&typeof json.version==="number")gameVersion=json.version;setSyncStatus("Synced")});
+    })
+    .catch(function(){setSyncStatus("Couldn't reach the server — your saves are still stored on this device")});
+}
+function createGameCode(){
+  setSyncMsg("Creating your code…");
+  fetch("/api/game-saves",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"create",data:getSyncData()})})
+    .then(function(res){if(!res.ok)throw new Error("create failed");return res.json()})
+    .then(function(json){
+      if(!json||!json.code)throw new Error("no code returned");
+      syncMsgText="";
+      activateGameCode(json.code,typeof json.version==="number"?json.version:0);
+      setSyncStatus("Synced");
+    })
+    .catch(function(){setSyncMsg("Codes work on the QuickJoin site.")});
+}
+function openGameCode(rawInput){
+  var raw=normalizeGameCode(rawInput);
+  if(raw.length!==20){setSyncMsg("That code doesn't look right — it should be 20 letters and numbers.");return}
+  setSyncMsg("Opening your code…");
+  fetch("/api/game-saves",{method:"GET",headers:{"x-game-code":raw}})
+    .then(function(res){if(!res.ok)throw new Error("open failed");return res.json()})
+    .then(function(json){
+      syncMsgText="";
+      activateGameCode(raw,typeof json.version==="number"?json.version:0);
+      if(json&&json.data)applySyncData(json.data);
+      renderSyncUI();
+      setSyncStatus("Synced");
+    })
+    .catch(function(){setSyncMsg("Codes work on the QuickJoin site.")});
+}
+function initSync(){
+  var hashCode=null;
+  if(location.hash&&location.hash.indexOf("#game=")===0)hashCode=normalizeGameCode(location.hash.slice(6));
+  var stored=null;
+  try{stored=localStorage.getItem("booklet-game-code")}catch(e){}
+  var code=(hashCode&&hashCode.length===20)?hashCode:(stored?normalizeGameCode(stored):null);
+  renderSyncUI();
+  if(!code||code.length!==20)return;
+  /* Reconnect quietly: local data already works either way, and a failed
+     fetch (e.g. the public link, which has no API) changes nothing. */
+  gameCode=code;gameVersion=0;
+  try{localStorage.setItem("booklet-game-code",code)}catch(e){}
+  renderSyncUI();
+  setSyncStatus("Syncing…");
+  fetch("/api/game-saves",{method:"GET",headers:{"x-game-code":code}})
+    .then(function(res){if(!res.ok)throw new Error("reconnect failed");return res.json()})
+    .then(function(json){
+      if(typeof json.version==="number")gameVersion=json.version;
+      if(json.data)applySyncData(json.data);
+      renderSyncUI();
+      setSyncStatus("Synced");
+      startSyncPolling();
+    })
+    .catch(function(){
+      setSyncStatus("Couldn't reach the server — your saves are still stored on this device");
+      startSyncPolling();
+    });
+}
+
 /* ================= INIT ================= */
+loadTdSaves();
+loadCustomPools();
 refreshPoolUI();
+renderSyncUI();
+initSync();
 mbNewWorld(false);
 </script>
 </body>
